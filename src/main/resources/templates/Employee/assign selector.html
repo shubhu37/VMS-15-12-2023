@@ -1,0 +1,45 @@
+$(document).ready(function () {
+
+$("#assignMeet").click(function () {
+
+var selectedEmployee = $("#emplist option:selected").text();
+
+// Create an array to store visitor data
+var visitorData = []; // array variable store
+
+$(".visitor-checkbox:checked").each(function () {
+var visitorId = $(this).data('id');
+
+var visitorName = $(this).closest('tr').find('td:nth-child(2)').text();
+
+var visitorReason = $(this).closest('tr').find('td:nth-child(5)').text();
+
+var visitor = {
+visitorId: visitorId,
+visitorName: visitorName,
+employeeName: selectedEmployee,
+reason: visitorReason
+};
+visitorData.push(visitor);
+});
+
+
+// Send the visitor data to the server using AJAX
+$.ajax({
+method: "POST",
+url: '/assignMeet',
+data: JSON.stringify(visitorData), // Send data as JSON array
+
+contentType: 'application/json', // Specify JSON content type
+
+success: function (response) {
+
+console.log("Data saved........");
+},
+error: function (error) {
+// Handle errors, if any
+console.error("Error saving data: " + error);
+}
+});
+});
+});

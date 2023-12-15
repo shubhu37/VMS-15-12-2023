@@ -1,0 +1,147 @@
+
+			
+	function assignMeeting()
+	{
+	const empDropdown = document.getElementById("emplist");
+	const selectedEmployeeId = empDropdown.value;
+	
+	if (!selectedEmployeeId || selectedEmployeeId === "--SELECT EMPLOYEE--") {
+	alert("Please select an employee.");
+	return;
+	}
+	
+	const selectedVisitorIds = [];
+	
+	const checkboxes = document.querySelectorAll(".visitor-checkbox:checked");
+	checkboxes.forEach(checkbox => {
+	selectedVisitorIds.push(checkbox.value);
+	});
+	
+	if (selectedVisitorIds.length === 0) {
+	alert("Please select at least one visitor.");
+	return;
+	}
+	
+	
+	const visitorData = [];
+	
+	$.ajax({
+	type: "POST",
+	url: "/saveAssignments",
+	contentType: "application/json",
+	data: JSON.stringify({ employeeId: selectedEmployeeId, visitors: visitorData }),
+	success: function (response) {
+	alert("Assignments saved successfully!");
+	// You can perform additional actions here if needed
+	},
+	error: function () {
+	alert("Failed to save assignments.");
+	}
+	});
+	}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+// assign meet nh  save the db
+
+
+		function assignMeeting() {
+    const empDropdown = document.getElementById("emplist");
+    
+    const selectedEmployeeId = empDropdown.value;
+
+    if (!selectedEmployeeId || selectedEmployeeId === "--SELECT EMPLOYEE--") {
+        alert("Please select an employee.");
+        return;
+    }
+
+    const selectedVisitorIds = [];
+    const checkboxes = document.querySelectorAll(".visitor-checkbox:checked");
+    checkboxes.forEach(checkbox => {
+        selectedVisitorIds.push(checkbox.value);
+    });
+
+    if (selectedVisitorIds.length === 0)
+     {
+        alert("Please select at least one visitor.");
+        return;
+    }
+
+    const assignments = [];
+       // alert("hiiiii");
+       // console.log(  " data "+ assignments);
+ 
+    $.ajax({
+        type: "GET",
+        url: "/employeeAll",
+        data: {
+            id: selectedEmployeeId
+        },
+        success: function (employeeData)
+         {
+            const employeeName = employeeData[0].name;
+
+            // alert("hiiiii");
+            const visitorDetailsPromises = selectedVisitorIds.map(visitorId => {
+                return $.ajax({
+                    type: "GET",
+                    url: "/visitorAll",
+                    data: {
+                        id: visitorId
+                    }
+                });
+            });
+  //alert("hiiiii");
+            Promise.all(visitorDetailsPromises)
+                .then(responses => {
+                    responses.forEach(visitorData => {
+                        assignments.push({
+                            employeeName: employeeName,
+                            visitorId: visitorData.id,
+                            visitorName: visitorData.name,
+                            reason: visitorData.reason 
+                        });
+                    });
+
+                    saveAssignments(assignments);
+                   // console.log(  " data "+ assignments);
+                })
+                .catch(error => {
+                    alert("Failed to fetch visitor details: " + error);
+                });
+        },
+        error: function () 
+        {
+            alert("Failed to fetch employee data.");
+        }
+    });
+}
+ 
+	function saveAssignments(assignments)
+	 
+	 {
+		 console.log(  " displayyyyy "+ assignments);
+		// alert()
+		 
+		$.ajax({
+			type: "POST",
+			url: "/save",
+			data: JSON.stringify(assignments),
+			contentType: "application/json",
+			success: function (response) 
+			{	
+				alert("Meeting saved....");
+			},
+			error: function ()
+			 {
+				alert("Failed to save Meetings......");
+			}
+		});
+}
+

@@ -1,0 +1,421 @@
+document.addEventListener("DOMContentLoaded", function ()
+{
+const employeeNameSelect = document.getElementById("employeeName");
+
+const visitorNameInput = document.getElementById("visitorName");
+
+const reasonInput = document.getElementById("reason");
+
+const assignButton = document.getElementById("assignButton");
+
+const displayEmployeeName = document.getElementById("displayEmployeeName");
+
+const displayVisitorName = document.getElementById("displayVisitorName");
+
+const displayReason = document.getElementById("displayReason");
+
+
+fetch('/employeeAll')
+.then(response => response.json())
+.then(employeeData => {
+employeeData.forEach(employee =>
+{
+const option = document.createElement("option");
+option.value = employee.name;
+option.text = employee.name;
+employeeNameSelect.appendChild(option);
+});
+})
+
+.catch(error =>
+{
+console.error("Error fetching employee names:", error);
+});
+
+assignMeet.addEventListener("click", function ()
+
+{
+const selectedEmployeeName = employeeNameSelect.value;
+const visitorName = visitorNameInput.value;
+const reason = reasonInput.value;
+
+
+displayEmployeeName.textContent = selectedEmployeeName;
+
+displayVisitorName.textContent = visitorName;
+
+displayReason.textContent = reason;
+
+});
+});
+
+
+
+
+
+
+
+
+
+
+
+
+function assignMeet() {
+// Step 1: Get selected visitor checkboxes
+const selectedVisitors = document.querySelectorAll('.visitor-checkbox:checked');
+
+if (selectedVisitors.length === 0)
+{
+alert('Please select at least one visitor.');
+return;
+}
+
+// Step 2: Get the selected employee from the dropdown list
+const selectedEmployee = document.getElementById('emplist').value;
+
+// Step 3: Prepare an array to store the selected visitor IDs
+const selectedVisitorIds = [];
+selectedVisitors.forEach(visitor => {
+selectedVisitorIds.push(visitor.getAttribute('data-id'));
+});
+
+// Step 4: Send a request to your server to fetch visitor data
+// You can use AJAX for this purpose, similar to how you fetch the initial visitor data
+// Example:
+$.ajax({
+method: 'POST', // Use POST or GET depending on your server endpoint
+url: '/fetchVisitorData', // Replace with your server endpoint for fetching visitor data
+data: {
+employee: selectedEmployee,
+visitorIds: selectedVisitorIds
+},
+success: function(data) {
+// Redirect to assign.html with the fetched data as query parameters
+const queryParams =
+`?employee=${encodeURIComponent(selectedEmployee)}&data=${encodeURIComponent(JSON.stringify(data))}`;
+window.location.href = `assign.html${queryParams}`;
+},
+error: function()
+{
+alert('Error fetching visitor data.');
+}
+});
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$(document).ready(function() {
+$("#button1").click(function(){
+$("#myselection").val('2');
+alert( $("#myselection option:selected").text() );
+});
+});
+</script>
+</head>
+
+<body>
+
+	<div>
+		<p>The selected value:</p>
+		<select id="myselection">
+			<option value="1">First</option>
+			<option value="2">Second</option>
+			<option value="3">Third</option>
+		</select>
+	</div>
+	<button id="button1">Click</button>
+
+	<div class="form-groupp">
+		<select id="emplist" class="form-control custom-select" required>
+			<option value="" disabled selected>--SELECT EMPLOYEE--</option>
+		</select>
+	</div>
+	<li class="nav-item dropdown d-lg-flex d-none">
+		<button type="button" id="assignMeet" class="btn btn-info font-weight-bold">Assign
+			Meet</button>
+	</li>
+
+
+
+
+
+
+
+
+	<div class="form-groupp">
+		<select id="emplist" class="form-control custom-select" required>
+			<option value="" disabled selected>--SELECT EMPLOYEE--</option>
+		</select>
+	</div>
+
+	<li class="nav-item dropdown d-lg-flex d-none">
+		<button type="button" id="assignMeet" class="btn btn-info font-weight-bold">Assign
+			Meet</button>
+	</li>
+
+
+
+
+
+	document.getElementById("assignMeet").addEventListener("click", function ()
+	{
+
+	const selectedVisitors = [];
+	document.querySelectorAll(".visitor-checkbox:checked").forEach(function (checkbox)
+	{
+	selectedVisitors.push(checkbox.getAttribute("data-id"));
+	});
+
+
+	const selectedEmployee = document.getElementById("emplist").value;
+
+	// Send data to the server via an AJAX request
+
+	const assignmentData = {
+	selectedVisitors: selectedVisitors,
+	selectedEmployee: selectedEmployee,
+	};
+
+
+	fetch("/assign",
+	{
+	method: "POST",
+	headers: {
+	"Content-Type": "application/json",
+	},
+	body: JSON.stringify(assignmentData),
+	})
+	.then(function (response) {
+
+	})
+	.catch(function (error) {
+	console.error("Error assigning meetings:", error);
+	});
+	});
+	
+	
+	
+	
+document.getElementById("assignMeet").addEventListener("click", function () 
+	  {
+	  
+	  const selectedVisitors = [];
+	  document.querySelectorAll(".visitor-checkbox:checked").forEach(function (checkbox)
+	   {
+	    selectedVisitors.push(checkbox.getAttribute("data-id"));
+	  });
+
+
+  const selectedEmployee = document.getElementById("emplist").value;
+
+
+  
+  const assignmentData = {
+    selectedVisitors: selectedVisitors,
+    selectedEmployee: selectedEmployee,
+  };
+
+ 
+ 	 fetch("/assign",
+   	{
+    method: "POST",
+   	 headers: {
+      "Content-Type": "application/json",
+   	 },
+   	 body: JSON.stringify(assignmentData),
+  		})
+	    .then(function (response) {
+	     
+	    })
+	    .catch(function (error) {
+	      console.error("Error assigning meetings:", error);
+	    });
+	});
+
+         	
+	
+	
+	
+	
+	
+	
+	
+	  
+ <script>
+    // Function to load visitor data when the page loads
+    function loadVisitorData() {
+        // Perform an AJAX request to fetch visitor data and populate the table
+        $.ajax({
+            method: "GET",
+            url: '/visitorAll',
+            success: function (data) {
+                // Process and display the visitor data in the table
+                populateVisitorTable(data);
+            },
+            error: function () {
+                alert("Error loading visitor data.");
+            }
+        });
+    }
+
+    // Function to populate the visitor table
+    function populateVisitorTable(data) 
+       {
+        var html = '';
+        for (var i = 0; i <i.length; i++) {
+           
+        }
+        $('#Table').html(html);
+    }
+
+  
+    function assignMeet()
+     {
+        
+        const selectedVisitorIds = [];
+        const checkboxes = document.querySelectorAll('.visitor-checkbox:checked');
+        checkboxes.forEach((checkbox) =>
+         {
+            selectedVisitorIds.push(checkbox.getAttribute('data-id'));
+        });
+
+      
+        const selectedEmployeeId = document.getElementById('emplist').value;
+
+        
+        $.ajax({
+            method: "POST",
+            url: `/assignMeet`,
+            data: {
+                employeeId: selectedEmployeeId,
+                visitorIds: selectedVisitorIds.join(',')
+            },
+            success: function (response) {
+                // Handle success response here, e.g., show a success message
+                alert("Meeting assigned successfully!");
+                // Redirect to the assign.html page or handle the response as needed
+                window.location.href = '/assign.html'; // Replace with your actual URL
+            },
+            error: function (error) {
+                // Handle error response here
+                console.error('Error assigning meet:', error);
+                alert("Error assigning meet. Please try again.");
+            }
+        });
+    }
+
+    // Attach the click event handler to the "Assign Meet" button
+    document.getElementById('assignMeet').addEventListener('click', assignMeet);
+</script>
+
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	function GetCheckbox() {
+		$.ajax({
+			method: "GET",
+			url: '/get-checkbox-states',
+			success: function (response) {
+				response.forEach(function (checkboxData) {
+					const checkbox = document.getElementById('checkbox' + checkboxData.id);
+
+					if (checkbox)
+					 {
+						checkbox.checked = checkboxData.status === 'true';
+					}
+				});
+			},
+			error: function ()
+			 {
+				alert("Error fetching checkbox states.");
+			}
+		});
+	}
+
+
+    $(document).ready(function ()
+	 {
+		GetCheckbox();
+
+		$('.visitor-checkbox').on('click', function ()
+		 {
+			const id = this.id.replace('checkbox', '');
+
+			const status = this.checked ? 'true' : 'false';
+
+			$.ajax({
+				method: "GET",
+				url: '/save-checkbox-state',
+				data: {id: id, status: status},
+				success: function () {
+				
+				},
+				error: function () {
+					alert("Error saving checkbox state.");
+				}
+			});
+		});
+	});
+
+	
+	
+	
+	
+	
+	
